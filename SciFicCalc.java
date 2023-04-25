@@ -17,7 +17,7 @@ public class SciFicCalc {
             return Double.parseDouble(a.substring(0,a.indexOf("+")))+Double.parseDouble(a.substring(a.indexOf("+")+1));
         }
         else if(b=="-") {
-
+ 
             return Double.parseDouble(a.substring(0,a.indexOf("-")))-Double.parseDouble(a.substring(a.indexOf("-")+1));
         }
         
