@@ -93,7 +93,7 @@ public class SciFicCalc {
     }
     public static void main(String[] qwertyuiop) {
         String[][] butn1={
-           { "calc","STO","/\\","\\/","x^-1","x^3"},
+           { "calc","STO","History","","x^-1","x^3"},
            { "a b/c","sqrt","x^2","^","log","ln"},
            { "sin^-1","cos^-1","tan^-1","sin","cos","tan"},
            { "RCL","ENG","(",")",",","M+"},
@@ -134,14 +134,19 @@ public class SciFicCalc {
         f.add(output,gbc);
     
         // gbc.ipady=0;
-         gbc.gridwidth=1;
+         
          
          gbc.weightx=1;
          gbc.weighty=1;
         JButton[][] btn=new JButton[4][6];
         for(int i=2;i<6;i++){
             for(int j=0;j<6;j++){
+                if(i==2&&j==3)continue;
                 gbc.gridx = j; gbc.gridy = i;
+                if(i==2&&j==2){
+                    gbc.gridwidth=2;
+                }else gbc.gridwidth=1;
+                
                 btn[i-2][j]=new JButton(butn1[i-2][j]);
                 f.add(btn[i-2][j],gbc);
             }
