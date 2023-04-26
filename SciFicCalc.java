@@ -1,7 +1,11 @@
 import javax.swing.*;
 import java.util.regex.*;
+import java.util.*;
 import java.awt.*;
-
+import java.awt.event.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 public class SciFicCalc {
     public static double calculation(String a,String b){
         if(b=="/") {
@@ -43,6 +47,50 @@ public class SciFicCalc {
         }else return line;
         
     }
+    public static ArrayList<String> history_fetch(){
+        ArrayList<String> txt = new ArrayList<String>();
+        // Path file=Path.of("java.txt");
+    try {
+            File filee=new File("history.txt");    
+            FileReader fr=new FileReader(filee);    
+            BufferedReader br=new BufferedReader(fr);   
+             
+            String line;  
+            while((line=br.readLine())!=null)  
+            {  
+            txt.add(line);  
+            }  
+            fr.close(); 
+        
+    
+    
+    } catch (Exception e) {
+        System.out.println(e);
+    } 
+    return txt;
+    }
+    public static void history_add(String given){
+        
+         Path file=Path.of("history.txt");
+    try {
+            File filee=new File("history.txt");    
+            FileReader fr=new FileReader(filee);    
+            BufferedReader br=new BufferedReader(fr);   
+             
+            String line,total="";  
+            while((line=br.readLine())!=null)  
+            {  
+            total+=line+"\n";
+            }  
+            fr.close(); 
+        Files.writeString(file, total+given);
+    
+    
+    } catch (IOException e) {
+        System.out.println(e);
+    } 
+   
+    }
     public static void main(String[] qwertyuiop) {
         String[][] butn1={
            { "calc","STO","/\\","\\/","x^-1","x^3"},
@@ -64,7 +112,7 @@ public class SciFicCalc {
         GridBagConstraints gbc = new GridBagConstraints();
 
        
-        {
+        
         JTextField editTextArea = new JTextField("");
         JTextArea output = new JTextArea("");
        
@@ -75,15 +123,16 @@ public class SciFicCalc {
         
         editTextArea.addActionListener(e ->
         {
-            
-            output.setText(replacer(replacer(replacer(replacer(editTextArea.getText(),"/"),"*"),"+"),"-"));
+            String input=editTextArea.getText();
+            output.setText(replacer(replacer(replacer(replacer(input,"/"),"*"),"+"),"-"));
+            history_add(input);
         });
         gbc.ipady=20;
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth=6;gbc.fill = GridBagConstraints.HORIZONTAL;gbc.weighty=0;
         f.add(editTextArea,gbc);
         gbc.gridx = 0; gbc.gridy = 1; 
         f.add(output,gbc);
-    }
+    
         // gbc.ipady=0;
          gbc.gridwidth=1;
          
@@ -107,10 +156,43 @@ public class SciFicCalc {
                 f.add(btn2[i-6][j],gbc);
             }
         }
-        
-        
+    
+        btn[0][2].addActionListener(e ->{
+           
+            //editTextArea.setText(history_fetch().get(history_fetch().size()-ith_history));
+            ArrayList<String> hislist=history_fetch();
+           JPopupMenu popup=new JPopupMenu("history");
+            JMenuItem[] hry=new JMenuItem[hislist.size()];
+            popup.setBackground(new Color(0, 0, 0));
+           
+            for( int i=hislist.size()-1;i>=0;i--){
+                hry[i]=new JMenuItem(hislist.get(i));
+                hry[i].addActionListener( em -> {
+                    String hhh=em.getSource().toString();
+                    editTextArea.setText(hhh.substring(hhh.indexOf(",text=")+6,hhh.length()-1));
+                    
+                });
+                popup.add(hry[i]);
+
+            }
+           
+            btn[0][2].addMouseListener(new MouseAdapter() {  
+            public void mouseClicked(MouseEvent e) {              
+                popup.show(btn[0][2] , e.getX(), e.getY());  
+            }                 
+         }); 
+            f.add(popup);
+
+
+
+        });
         
        
+
+
+       
+
+
     
         f.setVisible(true);
         f.pack();
