@@ -93,14 +93,14 @@ public class SciFicCalc {
     }
     public static void main(String[] qwertyuiop) {
         String[][] butn1={
-           { "calc","STO","History","","x^-1","x^3"},
-           { "a b/c","sqrt","x^2","^","log","ln"},
-           { "sin^-1","cos^-1","tan^-1","sin","cos","tan"},
+           { "calc","STO","History","","x⁻¹","x³"},
+           { "a b/c","sqrt","x²","xʸ","log","ln"},
+           { "sin⁻¹","cos⁻¹","tan⁻¹","sin","cos","tan"},
            { "RCL","ENG","(",")",",","M+"},
            { "7","8","9","DEL","AC",""},
-           { "4","5","6","*","/",""},
+           { "4","5","6","×","÷",""},
            { "1","2","3","+","-",""},
-           { "0",".","*10^x","%","=",""}
+           { "0",".","×10ˣ","%","=",""}
            
         };
 
