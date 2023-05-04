@@ -35,7 +35,8 @@ public class SciFicCalc {
         String temp="";
         
         String pattern = "\\-?[0-9.]+\\"+what+"\\-?[0-9.]+";
-    
+
+    //\-?[0-9.]+\+\-?[0-9.]+
         
         Pattern r = Pattern.compile(pattern);
     
@@ -47,9 +48,40 @@ public class SciFicCalc {
         }else return line;
         
     }
+    public static String without_braces(String input){
+        
+        return input.substring(1, input.length()-1);
+    }
+    public static String braces(String input){
+        String temp="";
+        
+        String pattern = "\\(\\-?[\\w+\\-.*/]+\\)";
+
+    
+        Pattern r = Pattern.compile(pattern);
+    
+       
+        Matcher m = r.matcher(input);
+        if (m.find()) {
+        temp=input.substring(0,m.start())+solver(without_braces(m.group()))+input.substring(m.end());
+        
+        return braces(temp);
+        }else   return solver(input);
+
+        
+    }
+    public static String solver(String input){
+
+        return replacer(replacer(replacer(replacer(input,"/"),"*"),"+"),"-");
+
+    }
+    public static String main_solver(String input){
+
+        return braces(input);
+    }
     public static ArrayList<String> history_fetch(){
         ArrayList<String> txt = new ArrayList<String>();
-        // Path file=Path.of("java.txt");
+        
     try {
             File filee=new File("history.txt");    
             FileReader fr=new FileReader(filee);    
@@ -58,7 +90,9 @@ public class SciFicCalc {
             String line;  
             while((line=br.readLine())!=null)  
             {  
-            txt.add(line);  
+            
+            txt.add(line); 
+           
             }  
             fr.close(); 
         
@@ -67,6 +101,7 @@ public class SciFicCalc {
     } catch (Exception e) {
         System.out.println(e);
     } 
+    Collections.reverse(txt);
     return txt;
     }
     public static void history_add(String given){
@@ -77,13 +112,14 @@ public class SciFicCalc {
             FileReader fr=new FileReader(filee);    
             BufferedReader br=new BufferedReader(fr);   
              
-            String line,total="";  
+            String line,total="";  int counter=1;
             while((line=br.readLine())!=null)  
             {  
-            total+=line+"\n";
+                if(counter>9)break;
+            total+=line+"\n"; counter++;
             }  
             fr.close(); 
-        Files.writeString(file, total+given);
+        Files.writeString(file, given+'\n'+total);
     
     
     } catch (IOException e) {
@@ -92,22 +128,23 @@ public class SciFicCalc {
    
     }
     public static void main(String[] qwertyuiop) {
+     
         String[][] butn1={
            { "calc","STO","History","","x⁻¹","x³"},
-           { "a b/c","sqrt","x²","xʸ","log","ln"},
+           { "a b/c","sqrt","x²","x"+Character.toString(0x02b8),"log","ln"},
            { "sin⁻¹","cos⁻¹","tan⁻¹","sin","cos","tan"},
            { "RCL","ENG","(",")",",","M+"},
            { "7","8","9","DEL","AC",""},
-           { "4","5","6","×","÷",""},
+           { "4","5","6",Character.toString(0x00d7),"÷",""},
            { "1","2","3","+","-",""},
-           { "0",".","×10ˣ","%","=",""}
+           { "0",".",Character.toString(0x00d7)+"10ˣ","%","=",""}
            
         };
 
 
         JFrame f = new JFrame("SciFicCalc");
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        f.setSize(500, 500);
+        f.setSize(400, 650);
         f.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -124,7 +161,7 @@ public class SciFicCalc {
         editTextArea.addActionListener(e ->
         {
             String input=editTextArea.getText();
-            output.setText(replacer(replacer(replacer(replacer(input,"/"),"*"),"+"),"-"));
+            output.setText(main_solver(input));
             history_add(input);
         });
         gbc.ipady=20;
@@ -200,7 +237,7 @@ public class SciFicCalc {
 
     
         f.setVisible(true);
-        f.pack();
+        //f.pack();
 
      
     }
