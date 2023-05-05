@@ -6,141 +6,212 @@ import java.awt.event.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 public class SciFicCalc {
-    public static double calculation(String a,String b){
-        if(b=="/") {
+    public static double calculation(String a, String b) {
+        if (b == "/") {
 
-            return Double.parseDouble(a.substring(0,a.indexOf("/")))/Double.parseDouble(a.substring(a.indexOf("/")+1));
-        }
-        else if(b=="*") {
+            return Double.parseDouble(a.substring(0, a.indexOf("/")))
+                    / Double.parseDouble(a.substring(a.indexOf("/") + 1));
+        } else if (b == "*") {
 
-            return Double.parseDouble(a.substring(0,a.indexOf("*")))*Double.parseDouble(a.substring(a.indexOf("*")+1));
-        }
-        else if(b=="+") {
+            return Double.parseDouble(a.substring(0, a.indexOf("*")))
+                    * Double.parseDouble(a.substring(a.indexOf("*") + 1));
+        } else if (b == "+") {
 
-            return Double.parseDouble(a.substring(0,a.indexOf("+")))+Double.parseDouble(a.substring(a.indexOf("+")+1));
-        }
-        else if(b=="-") {
- 
-            return Double.parseDouble(a.substring(0,a.indexOf("-")))-Double.parseDouble(a.substring(a.indexOf("-")+1));
-        }
-        
-        
-        
-        
-        else return Double.parseDouble(a);
-    }
-  
-     public static String replacer(String line,String what){
-        String temp="";
-        
-        String pattern = "\\-?[0-9.]+\\"+what+"\\-?[0-9.]+";
+            return Double.parseDouble(a.substring(0, a.indexOf("+")))
+                    + Double.parseDouble(a.substring(a.indexOf("+") + 1));
+        } else if (b == "-") {
 
-    //\-?[0-9.]+\+\-?[0-9.]+
+            return Double.parseDouble(a.substring(0, a.indexOf("-")))
+                    - Double.parseDouble(a.substring(a.indexOf("-") + 1));
+        }
+         else if (b == "sin") {
+
+        return Math.sin(Math.toRadians(Double.parseDouble(a.substring(4,a.length()-1))));
+               
+        }
+        else if (b == "cos") {
+
+        return Math.cos(Math.toRadians(Double.parseDouble(a.substring(4,a.length()-1))));
+               
+        }
+        else if (b == "tan") {
+
+        return Math.tan(Math.toRadians(Double.parseDouble(a.substring(4,a.length()-1))));
+               
+        }
+        else if (b == "sin\\^\\-1") {
+
+        return Math.toDegrees(Math.asin(Double.parseDouble(a.substring(7,a.length()-1))));
+               
+        }
         
-        Pattern r = Pattern.compile(pattern);
+
+        else if (b == "cos\\^\\-1") {
+
+        return Math.toDegrees(Math.acos(Double.parseDouble(a.substring(7,a.length()-1))));
+               
+        }
+
+        else if (b == "tan\\^\\-1") {
+
+        return Math.toDegrees(Math.atan(Double.parseDouble(a.substring(7,a.length()-1))));
+               
+        }
+
+        else if (b == "log") {
+
+        return Math.log10((Double.parseDouble(a.substring(6,a.length()-1))));
+                   
+        }
+
+        else if (b == "ln") {
+
+            return Math.log((Double.parseDouble(a.substring(4,a.length()-1))));
+                       
+            }
     
-       
+            
+    
+
+        else
+            return Double.parseDouble(a);
+    }
+
+    public static String replacer(String line, String what) {
+        String temp = "";
+
+        String pattern = "\\-?[0-9.]+\\" + what + "\\-?[0-9.]+";
+
+        // \-?[0-9.]+\+\-?[0-9.]+
+
+        Pattern r = Pattern.compile(pattern);
+
         Matcher m = r.matcher(line);
         if (m.find()) {
-        temp=line.substring(0,m.start())+calculation(m.group(), what)+line.substring(m.end());
-        return replacer(temp, what);
-        }else return line;
-        
-    }
-    public static String without_braces(String input){
-        
-        return input.substring(1, input.length()-1);
-    }
-    public static String braces(String input){
-        String temp="";
-        
-        String pattern = "\\(\\-?[\\w+\\-.*/]+\\)";
+            temp = line.substring(0, m.start()) + calculation(m.group(), what) + line.substring(m.end());
+            return replacer(temp, what);
+        } else
+            return line;
 
-    
+    }
+
+    public static String without_braces(String input) {
+
+        return input.substring(1, input.length() - 1);
+    }
+ 
+    public static String mathFunction(String input) {
+      String funs[]={"sin","cos","tan","sin\\^\\-1","cos\\^\\-1","tan\\^\\-1","log","ln"};
+      for (String fff : funs) {
+        
+      
+        String temp = "";
+
+        String pattern = fff+"\\[\\-?[0-9.\\+\\-\\*\\/]+\\]";
+
         Pattern r = Pattern.compile(pattern);
-    
-       
+
         Matcher m = r.matcher(input);
         if (m.find()) {
-        temp=input.substring(0,m.start())+solver(without_braces(m.group()))+input.substring(m.end());
-        
-        return braces(temp);
-        }else   return solver(input);
+            temp = input.substring(0, m.start()) + calculation(solver(m.group()),fff) + input.substring(m.end());
 
-        
-    }
-    public static String solver(String input){
-
-        return replacer(replacer(replacer(replacer(input,"/"),"*"),"+"),"-");
+            return mathFunction(temp);
+        } 
 
     }
-    public static String main_solver(String input){
+    return solver(input);
+}
+    public static String braces(String input) {
+        String temp = "";
 
-        return braces(input);
+        String pattern = "\\(\\-?[\\w+\\-.*/]+\\)";
+
+        Pattern r = Pattern.compile(pattern);
+
+        Matcher m = r.matcher(input);
+        if (m.find()) {
+            temp = input.substring(0, m.start()) + solver(without_braces(m.group())) + input.substring(m.end());
+
+            return braces(temp);
+        } else
+            return solver(input);
+
     }
-    public static ArrayList<String> history_fetch(){
+
+    public static String solver(String input) {
+
+        return replacer(replacer(replacer(replacer(input, "/"), "*"), "+"), "-");
+
+    }
+
+    public static String main_solver(String input) {
+
+        return mathFunction(braces(input));
+    }
+
+    public static ArrayList<String> history_fetch() {
         ArrayList<String> txt = new ArrayList<String>();
-        
-    try {
-            File filee=new File("history.txt");    
-            FileReader fr=new FileReader(filee);    
-            BufferedReader br=new BufferedReader(fr);   
-             
-            String line;  
-            while((line=br.readLine())!=null)  
-            {  
-            
-            txt.add(line); 
-           
-            }  
-            fr.close(); 
-        
-    
-    
-    } catch (Exception e) {
-        System.out.println(e);
-    } 
-    Collections.reverse(txt);
-    return txt;
-    }
-    public static void history_add(String given){
-        
-         Path file=Path.of("history.txt");
-    try {
-            File filee=new File("history.txt");    
-            FileReader fr=new FileReader(filee);    
-            BufferedReader br=new BufferedReader(fr);   
-             
-            String line,total="";  int counter=1;
-            while((line=br.readLine())!=null)  
-            {  
-                if(counter>9)break;
-            total+=line+"\n"; counter++;
-            }  
-            fr.close(); 
-        Files.writeString(file, given+'\n'+total);
-    
-    
-    } catch (IOException e) {
-        System.out.println(e);
-    } 
-   
-    }
-    public static void main(String[] qwertyuiop) {
-     
-        String[][] butn1={
-           { "calc","STO","History","","x⁻¹","x³"},
-           { "a b/c","sqrt","x²","x"+Character.toString(0x02b8),"log","ln"},
-           { "sin⁻¹","cos⁻¹","tan⁻¹","sin","cos","tan"},
-           { "RCL","ENG","(",")",",","M+"},
-           { "7","8","9","DEL","AC",""},
-           { "4","5","6",Character.toString(0x00d7),"÷",""},
-           { "1","2","3","+","-",""},
-           { "0",".",Character.toString(0x00d7)+"10ˣ","%","=",""}
-           
-        };
 
+        try {
+            File filee = new File("history.txt");
+            FileReader fr = new FileReader(filee);
+            BufferedReader br = new BufferedReader(fr);
+
+            String line;
+            while ((line = br.readLine()) != null) {
+
+                txt.add(line);
+
+            }
+            fr.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        Collections.reverse(txt);
+        return txt;
+    }
+
+    public static void history_add(String given) {
+
+        Path file = Path.of("history.txt");
+        try {
+            File filee = new File("history.txt");
+            FileReader fr = new FileReader(filee);
+            BufferedReader br = new BufferedReader(fr);
+
+            String line, total = "";
+            int counter = 1;
+            while ((line = br.readLine()) != null) {
+                if (counter > 9)
+                    break;
+                total += line + "\n";
+                counter++;
+            }
+            fr.close();
+            Files.writeString(file, given + '\n' + total);
+
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+
+    }
+
+    public static void main(String[] qwertyuiop) {
+
+        String[][] butn1 = {
+                { "calc", "STO", "History", "", "x⁻¹", "x³" },
+                { "a b/c", "sqrt", "x²", "x" + Character.toString(0x02b8), "log", "ln" },
+                { "sin⁻¹", "cos⁻¹", "tan⁻¹", "sin", "cos", "tan" },
+                { "RCL", "ENG", "(", ")", ",", "M+" },
+                { "7", "8", "9", "DEL", "AC", "" },
+                { "4", "5", "6", Character.toString(0x00d7), "÷", "" },
+                { "1", "2", "3", "+", "-", "" },
+                { "0", ".", Character.toString(0x00d7) + "10ˣ", "%", "=", "" }
+
+        };
 
         JFrame f = new JFrame("SciFicCalc");
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -148,98 +219,96 @@ public class SciFicCalc {
         f.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-       
-        
         JTextField editTextArea = new JTextField("");
         JTextArea output = new JTextArea("");
-       
-      
+
         output.setBorder(BorderFactory.createDashedBorder(null, 2, 1));
-      
-        
-        
-        editTextArea.addActionListener(e ->
-        {
-            String input=editTextArea.getText();
+
+        editTextArea.addActionListener(e -> {
+            String input = editTextArea.getText();
             output.setText(main_solver(input));
             history_add(input);
+            System.out.println(editTextArea.getCaretPosition());
+         
         });
-        gbc.ipady=20;
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth=6;gbc.fill = GridBagConstraints.HORIZONTAL;gbc.weighty=0;
-        f.add(editTextArea,gbc);
-        gbc.gridx = 0; gbc.gridy = 1; 
-        f.add(output,gbc);
-    
+        gbc.ipady = 20;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 6;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0;
+        f.add(editTextArea, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        f.add(output, gbc);
+
         // gbc.ipady=0;
-         
-         
-         gbc.weightx=1;
-         gbc.weighty=1;
-        JButton[][] btn=new JButton[4][6];
-        for(int i=2;i<6;i++){
-            for(int j=0;j<6;j++){
-                if(i==2&&j==3)continue;
-                gbc.gridx = j; gbc.gridy = i;
-                if(i==2&&j==2){
-                    gbc.gridwidth=2;
-                }else gbc.gridwidth=1;
-                
-                btn[i-2][j]=new JButton(butn1[i-2][j]);
-                f.add(btn[i-2][j],gbc);
+
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        JButton[][] btn = new JButton[4][6];
+        for (int i = 2; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                if (i == 2 && j == 3)
+                    continue;
+                gbc.gridx = j;
+                gbc.gridy = i;
+                if (i == 2 && j == 2) {
+                    gbc.gridwidth = 2;
+                } else
+                    gbc.gridwidth = 1;
+
+                btn[i - 2][j] = new JButton(butn1[i - 2][j]);
+                btn[i - 2][j].setMargin(new Insets(0,0,0,0));
+                f.add(btn[i - 2][j], gbc);
             }
         }
-        JButton[][] btn2=new JButton[4][6];
-        for(int i=6;i<10;i++){
-            for(int j=0;j<5;j++){
-                gbc.gridx = j; gbc.gridy = i;
-                if(j==4)gbc.gridwidth=2;
-                else gbc.gridwidth=1;
-                btn2[i-6][j]=new JButton(butn1[i-2][j]);
-                f.add(btn2[i-6][j],gbc);
+        JButton[][] btn2 = new JButton[4][6];
+        for (int i = 6; i < 10; i++) {
+            for (int j = 0; j < 5; j++) {
+                gbc.gridx = j;
+                gbc.gridy = i;
+                if (j == 4)
+                    gbc.gridwidth = 2;
+                else
+                    gbc.gridwidth = 1;
+                btn2[i - 6][j] = new JButton(butn1[i - 2][j]);
+                btn2[i - 6][j].setMargin(new Insets(0,0,0,0));
+                f.add(btn2[i - 6][j], gbc);
             }
         }
-    
-        btn[0][2].addActionListener(e ->{
-           
-            //editTextArea.setText(history_fetch().get(history_fetch().size()-ith_history));
-            ArrayList<String> hislist=history_fetch();
-           JPopupMenu popup=new JPopupMenu("history");
-            JMenuItem[] hry=new JMenuItem[hislist.size()];
+
+        btn[0][2].addActionListener(e -> {
+
+            // editTextArea.setText(history_fetch().get(history_fetch().size()-ith_history));
+            ArrayList<String> hislist = history_fetch();
+            JPopupMenu popup = new JPopupMenu("history");
+            JMenuItem[] hry = new JMenuItem[hislist.size()];
             popup.setBackground(new Color(0, 0, 0));
-           
-            for( int i=hislist.size()-1;i>=0;i--){
-                hry[i]=new JMenuItem(hislist.get(i));
-                hry[i].addActionListener( em -> {
-                    String hhh=em.getSource().toString();
-                    editTextArea.setText(hhh.substring(hhh.indexOf(",text=")+6,hhh.length()-1));
-                    
+
+            for (int i = hislist.size() - 1; i >= 0; i--) {
+                hry[i] = new JMenuItem(hislist.get(i));
+                hry[i].addActionListener(em -> {
+                    String hhh = em.getSource().toString();
+                    editTextArea.setText(hhh.substring(hhh.indexOf(",text=") + 6, hhh.length() - 1));
+
                 });
                 popup.add(hry[i]);
 
             }
-           
-            btn[0][2].addMouseListener(new MouseAdapter() {  
-            public void mouseClicked(MouseEvent e) {              
-                popup.show(btn[0][2] , e.getX(), e.getY());  
-            }                 
-         }); 
+
+            btn[0][2].addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    popup.show(btn[0][2], e.getX(), e.getY());
+                }
+            });
             f.add(popup);
 
-
-
         });
-        
-       
 
-
-       
-
-
-    
         f.setVisible(true);
-        //f.pack();
+        // f.pack();
 
-     
     }
 
 }
