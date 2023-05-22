@@ -1,4 +1,6 @@
 import javax.swing.*;
+//import javax.swing.text.html.FormView;
+
 import java.util.regex.*;
 import java.util.*;
 import java.awt.*;
@@ -8,6 +10,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class SciFicCalc {
+   static double A=0,B=0,C=0,D=0,E=0,F=0;
+   public static double getVar(int i) {
+    if(i==0)return A;
+    if(i==1)return B;
+    if(i==2)return C;
+    if(i==3)return D;
+    if(i==4)return E;
+    if(i==5)return F;
+    return 0.0;
+
+   }
     public static double calculation(String a, String b) {
         if (b == "/") {
 
@@ -25,6 +38,12 @@ public class SciFicCalc {
 
             return Double.parseDouble(a.substring(0, a.indexOf("-")))
                     - Double.parseDouble(a.substring(a.indexOf("-") + 1));
+        }
+
+        else if (b == "^") {
+
+            return Math.pow(Double.parseDouble(a.substring(0, a.indexOf("^")))
+                    , Double.parseDouble(a.substring(a.indexOf("^") + 1)));
         }
          else if (b == "sin") {
 
@@ -61,14 +80,19 @@ public class SciFicCalc {
         }
 
         else if (b == "log") {
-
-        return Math.log10((Double.parseDouble(a.substring(6,a.length()-1))));
+           
+        return Math.log10((Double.parseDouble(a.substring(4,a.length()-1))));
                    
         }
 
         else if (b == "ln") {
 
-            return Math.log((Double.parseDouble(a.substring(4,a.length()-1))));
+            return Math.log((Double.parseDouble(a.substring(3,a.length()-1))));
+                       
+            }
+        else if (b == "sqrt") {
+
+            return Math.sqrt((Double.parseDouble(a.substring(5,a.length()-1))));
                        
             }
     
@@ -101,9 +125,9 @@ public class SciFicCalc {
 
         return input.substring(1, input.length() - 1);
     }
- 
+  
     public static String mathFunction(String input) {
-      String funs[]={"sin","cos","tan","sin\\^\\-1","cos\\^\\-1","tan\\^\\-1","log","ln"};
+      String funs[]={"sin","cos","tan","sin\\^\\-1","cos\\^\\-1","tan\\^\\-1","log","ln","sqrt"};
       for (String fff : funs) {
         
       
@@ -142,13 +166,23 @@ public class SciFicCalc {
 
     public static String solver(String input) {
 
-        return replacer(replacer(replacer(replacer(input, "/"), "*"), "+"), "-");
+        return replacer(replacer(replacer(replacer(replacer(input, "^"), "/"), "*"), "+"), "-");
 
     }
 
+    public static String variableParser(String input) {
+       
+       while(input.indexOf("A")!=-1)input=input.substring(0, input.indexOf("A"))+A+input.substring(input.indexOf("A")+1);
+       while(input.indexOf("B")!=-1)input=input.substring(0, input.indexOf("B"))+B+input.substring(input.indexOf("B")+1);
+       while(input.indexOf("C")!=-1)input=input.substring(0, input.indexOf("C"))+C+input.substring(input.indexOf("C")+1);
+       while(input.indexOf("D")!=-1)input=input.substring(0, input.indexOf("D"))+D+input.substring(input.indexOf("D")+1);
+       while(input.indexOf("E")!=-1)input=input.substring(0, input.indexOf("E"))+E+input.substring(input.indexOf("E")+1);
+       while(input.indexOf("F")!=-1)input=input.substring(0, input.indexOf("F"))+F+input.substring(input.indexOf("F")+1);
+        return input;
+    }
     public static String main_solver(String input) {
 
-        return mathFunction(braces(input));
+        return braces(mathFunction(braces(variableParser(input))));
     }
 
     public static ArrayList<String> history_fetch() {
@@ -199,17 +233,18 @@ public class SciFicCalc {
 
     }
 
+
     public static void main(String[] qwertyuiop) {
 
         String[][] butn1 = {
                 { "calc", "STO", "History", "", "x⁻¹", "x³" },
-                { "a b/c", "sqrt", "x²", "x" + Character.toString(0x02b8), "log", "ln" },
+                { "x⁻¹", "sqrt", "x²", "x" + Character.toString(0x02b8), "log", "ln" },
                 { "sin⁻¹", "cos⁻¹", "tan⁻¹", "sin", "cos", "tan" },
-                { "RCL", "ENG", "(", ")", ",", "M+" },
+                { "A", "B", "C", "D", "E", "F"  },
                 { "7", "8", "9", "DEL", "AC", "" },
                 { "4", "5", "6", Character.toString(0x00d7), "÷", "" },
                 { "1", "2", "3", "+", "-", "" },
-                { "0", ".", Character.toString(0x00d7) + "10ˣ", "%", "=", "" }
+                { "0", ".", Character.toString(0x00d7) + "10ˣ", "00", "=", "" }
 
         };
 
@@ -228,7 +263,7 @@ public class SciFicCalc {
             String input = editTextArea.getText();
             output.setText(main_solver(input));
             history_add(input);
-            System.out.println(editTextArea.getCaretPosition());
+         
          
         });
         gbc.ipady = 20;
@@ -280,7 +315,7 @@ public class SciFicCalc {
 
         btn[0][2].addActionListener(e -> {
 
-            // editTextArea.setText(history_fetch().get(history_fetch().size()-ith_history));
+            
             ArrayList<String> hislist = history_fetch();
             JPopupMenu popup = new JPopupMenu("history");
             JMenuItem[] hry = new JMenuItem[hislist.size()];
@@ -305,6 +340,115 @@ public class SciFicCalc {
             f.add(popup);
 
         });
+        String[][] numpad = {
+            { "7", "8", "9", "", "" },
+            { "4", "5", "6", "*", "/" },
+            { "1", "2", "3", "+", "-" },
+            { "0", ".", "*10^", "00", "" }
+        
+
+    };
+    for(int i=0;i<=3;i++){
+        for(int j=0;j<=4;j++){
+             String numtext=numpad[i][j];
+             if(i==3&&j==4){
+                //equal button
+                btn2[i][j].addActionListener( e ->{
+                    String input = editTextArea.getText();
+                    output.setText(main_solver(input));
+                    history_add(input);
+                    editTextArea.requestFocus();
+                });
+                continue;
+               }
+               if(i==0&&j==4){
+                //AC button
+                btn2[i][j].addActionListener( e ->{
+                    editTextArea.setText("");
+                    editTextArea.requestFocus();
+                });
+                continue;
+               }
+
+               if(i==0&&j==3){
+                //DEL button
+                btn2[i][j].addActionListener( e ->{
+                    String given=editTextArea.getText();
+                    if(given.length()!=0)editTextArea.setText(given.substring(0, given.length()-1));
+                    editTextArea.requestFocus();
+                });
+                continue;
+               }
+
+
+        btn2[i][j].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+            int pos= editTextArea.getCaretPosition();
+            String pre=editTextArea.getText();
+            editTextArea.setText(pre.substring(0, pos)+numtext+pre.substring(pos));
+            editTextArea.setCaretPosition(pos+numtext.length());
+            editTextArea.requestFocus();
+            }
+        });
+            
+
+
+}}
+String[][] funcPad= {
+    { "^-1","sqrt[]","^2","^","log[]","ln[]" },
+    { "sin^-1[]","cos^-1[]","tan^-1[]","sin[]","cos[]","tan[]" },
+    { "A","B","C","D","E","F" }
+    
+
+};
+    for(int i=0;i<=2;i++){
+        for(int j=0;j<=5;j++){
+             String functext=funcPad[i][j];
+                int iii=i,jjj=j;
+                
+
+        btn[i+1][j].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+            int pos= editTextArea.getCaretPosition();
+            String pre=editTextArea.getText();
+            editTextArea.setText(pre.substring(0, pos)+functext+pre.substring(pos));
+            int cursor=(iii==2||(iii==0&&jjj==0)||(iii==0&&jjj==2)||(iii==0&&jjj==3))?functext.length():functext.length()-1;
+            editTextArea.setCaretPosition(pos+cursor);
+
+            
+            
+            editTextArea.requestFocus();
+            }
+        });
+
+
+    }}
+    for(int i=0;i<=5;i++){
+        int iii=i;
+        
+    btn[3][i].addMouseListener(new MouseAdapter() {
+        
+            public void mouseClicked(MouseEvent e){
+                if(e.getButton()==3&&!output.getText().isEmpty()){
+                    if(iii==0){A=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
+                    if(iii==1){B=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
+                    if(iii==2){C=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
+                    if(iii==3){D=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
+                    if(iii==4){E=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
+                    if(iii==5){F=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
+                    
+                }
+                
+            }
+
+    });
+
+    
+
+    }
+
+    
+        
 
         f.setVisible(true);
         // f.pack();
