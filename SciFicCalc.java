@@ -1,16 +1,13 @@
 import javax.swing.*;
-//import javax.swing.text.html.FormView;
-
 import java.util.regex.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 
 public class SciFicCalc {
-   static double A=0,B=0,C=0,D=0,E=0,F=0;
+   static double A=0,B=0,C=0,D=0,E=0,F=0;//variable for storing at memory
    public static double getVar(int i) {
     if(i==0)return A;
     if(i==1)return B;
@@ -19,8 +16,18 @@ public class SciFicCalc {
     if(i==4)return E;
     if(i==5)return F;
     return 0.0;
-
    }
+   public static String variableParser(String input) {
+       
+    while(input.indexOf("A")!=-1)input=input.substring(0, input.indexOf("A"))+A+input.substring(input.indexOf("A")+1);
+    while(input.indexOf("B")!=-1)input=input.substring(0, input.indexOf("B"))+B+input.substring(input.indexOf("B")+1);
+    while(input.indexOf("C")!=-1)input=input.substring(0, input.indexOf("C"))+C+input.substring(input.indexOf("C")+1);
+    while(input.indexOf("D")!=-1)input=input.substring(0, input.indexOf("D"))+D+input.substring(input.indexOf("D")+1);
+    while(input.indexOf("E")!=-1)input=input.substring(0, input.indexOf("E"))+E+input.substring(input.indexOf("E")+1);
+    while(input.indexOf("F")!=-1)input=input.substring(0, input.indexOf("F"))+F+input.substring(input.indexOf("F")+1);
+     return input;
+ }
+
     public static double calculation(String a, String b) {
         if (b == "/") {
 
@@ -65,7 +72,7 @@ public class SciFicCalc {
         return Math.toDegrees(Math.asin(Double.parseDouble(a.substring(7,a.length()-1))));
                
         }
-        
+
 
         else if (b == "cos\\^\\-1") {
 
@@ -170,16 +177,7 @@ public class SciFicCalc {
 
     }
 
-    public static String variableParser(String input) {
-       
-       while(input.indexOf("A")!=-1)input=input.substring(0, input.indexOf("A"))+A+input.substring(input.indexOf("A")+1);
-       while(input.indexOf("B")!=-1)input=input.substring(0, input.indexOf("B"))+B+input.substring(input.indexOf("B")+1);
-       while(input.indexOf("C")!=-1)input=input.substring(0, input.indexOf("C"))+C+input.substring(input.indexOf("C")+1);
-       while(input.indexOf("D")!=-1)input=input.substring(0, input.indexOf("D"))+D+input.substring(input.indexOf("D")+1);
-       while(input.indexOf("E")!=-1)input=input.substring(0, input.indexOf("E"))+E+input.substring(input.indexOf("E")+1);
-       while(input.indexOf("F")!=-1)input=input.substring(0, input.indexOf("F"))+F+input.substring(input.indexOf("F")+1);
-        return input;
-    }
+
     public static String main_solver(String input) {
 
         return braces(mathFunction(braces(variableParser(input))));
@@ -237,7 +235,7 @@ public class SciFicCalc {
     public static void main(String[] qwertyuiop) {
 
         String[][] butn1 = {
-                { "calc", "STO", "History", "", "x⁻¹", "x³" },
+                { "(", "<-", "History", "", "->", ")" },
                 { "x⁻¹", "sqrt", "x²", "x" + Character.toString(0x02b8), "log", "ln" },
                 { "sin⁻¹", "cos⁻¹", "tan⁻¹", "sin", "cos", "tan" },
                 { "A", "B", "C", "D", "E", "F"  },
@@ -247,6 +245,8 @@ public class SciFicCalc {
                 { "0", ".", Character.toString(0x00d7) + "10ˣ", "00", "=", "" }
 
         };
+        /*0x02b8--> to the power y
+          0x00d7--> multiple sign*/
 
         JFrame f = new JFrame("SciFicCalc");
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -374,7 +374,9 @@ public class SciFicCalc {
                 //DEL button
                 btn2[i][j].addActionListener( e ->{
                     String given=editTextArea.getText();
-                    if(given.length()!=0)editTextArea.setText(given.substring(0, given.length()-1));
+                    int pos=editTextArea.getCaretPosition();
+                    if(given.length()!=0){editTextArea.setText(given.substring(0, pos-1)+given.substring(pos));}
+                    editTextArea.setCaretPosition(pos-1);
                     editTextArea.requestFocus();
                 });
                 continue;
@@ -430,13 +432,14 @@ String[][] funcPad= {
         
             public void mouseClicked(MouseEvent e){
                 if(e.getButton()==3&&!output.getText().isEmpty()){
+                    
                     if(iii==0){A=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
                     if(iii==1){B=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
                     if(iii==2){C=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
                     if(iii==3){D=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
                     if(iii==4){E=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
                     if(iii==5){F=Double.parseDouble(output.getText());btn[3][iii].setToolTipText(getVar(iii)+"");}
-                    
+                  
                 }
                 
             }
@@ -446,12 +449,40 @@ String[][] funcPad= {
     
 
     }
+    for(int i=0;i<=1;i++){
+        int iii=i;
+    btn[0][i*5].addActionListener(e ->{
+        
+        String[] braces={ "(",")"};
+        int pos= editTextArea.getCaretPosition();
+            String pre=editTextArea.getText();
+            editTextArea.setText(pre.substring(0, pos)+braces[iii]+pre.substring(pos));
+           
+            editTextArea.setCaretPosition(pos+1);
 
-    
+            editTextArea.requestFocus();
+
+    }); 
+    }
+
+    for(int i=1;i<=4;i+=3){
+        int iii=i;
+    btn[0][i].addActionListener(e ->{
+        
+      
+        int pos= editTextArea.getCaretPosition();
+            int newPos=(iii==1)?pos-1:pos+1;
+            if((iii==1&&pos!=0)||(iii==4&&pos!=editTextArea.getText().length()))editTextArea.setCaretPosition(newPos);
+            else Toolkit.getDefaultToolkit().beep();
+            editTextArea.requestFocus();
+
+    }); 
+    }
+
         
 
         f.setVisible(true);
-        // f.pack();
+   
 
     }
 
